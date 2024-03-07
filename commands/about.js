@@ -12,7 +12,7 @@ module.exports = {
 			fields: [
 				{
 					name: 'GitHub Repo',
-					value: '[Clicca qui](https://github.com/MrVideo/poliresourcebot.js)'
+					value: '[Clicca qui](https://github.com/MrVideo/CatanLeaderboardBot)'
 				},
 			]
 		}
