@@ -1,0 +1,11 @@
+# Database
+sqlitedb
+
+# Secrets file
+config.json
+
+# Node
+node_modules
+
+# File system
+.DS_Store
