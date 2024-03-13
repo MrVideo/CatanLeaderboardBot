@@ -7,7 +7,7 @@ const { getMessageId, log } = require('../functions.js');
 module.exports = {
 	data: new SlashCommandBuilder()
 		.setName('init')
-		.setDescription('Adds a player without adding one point to them.'),
+		.setDescription('Sends the leaderboard message in a predefined channel and updates it automatically.'),
 
 	async execute(interaction) {
 		// Defer reply
