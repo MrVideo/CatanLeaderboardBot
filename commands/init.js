@@ -1,7 +1,7 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 // Initialise SQLite driver
 const sqlite = require('sqlite3');
-const { dbName } = require('../config.json');
+const { dbName, channelId } = require('../config.json');
 const { getMessageId, log } = require('../functions.js');
 
 module.exports = {
@@ -16,19 +16,71 @@ module.exports = {
 		try {
 			const db = new sqlite.Database(dbName);
 
-			// Get username from user that invokes the command
-			const username = interaction.user.username;
+			// Check whether the initial message was already sent
+			const messageId = await getMessageId();
+			
+			if (messageId != undefined) {
+				await interaction.editReply('A leaderboard message was already sent.');
 				log("Attempt to initialise with a leaderboard message present");
+			} else {
+				// Initialize embed
+				let queryResponseEmbed = new EmbedBuilder()
+					.setTitle('Leaderboard')
 
-			// Prepare query
-			const insertStatement = db.prepare('INSERT OR IGNORE INTO Points (Username) VALUES (?)');
+				// Prepare query
+				const queryStatement = db.prepare('SELECT * FROM Points ORDER BY Wins DESC');
 
-			insertStatement.run([username]);
-			insertStatement.finalize();
+				const rows = await new Promise((resolve, reject) => {
+					queryStatement.all((err, rows) => {
+						queryStatement.finalize();
 
-			db.close();
-			await interaction.editReply('Done.');
+						if (err)
+							reject(err);
+						else resolve(rows);
+					});
+				});
+
+				if (rows.length !== 0) {
+					rows.forEach((row) => {
+						queryResponseEmbed.addFields({
+							name: row.Username,
+							value: `${row.Wins}`
+						})
+					});
+				} else {
+					queryResponseEmbed.addFields({
+						name: "No players yet",
+						value: "Play more Catan!"
+					});
+				}
+
+				const channel = interaction.guild.channels.cache.get(channelId);
+
+				if (channel != null) {
+					channel.send({ embeds: [queryResponseEmbed] })
+						.then(async message => {
+							const lastId = await new Promise((resolve, reject) => {
+								const insertMessageIdStatement = db.prepare('INSERT INTO Message VALUES(?)');
+
+								insertMessageIdStatement.run([message.id], (err) => {
+									if (err) {
+										reject(err);
+									} else {
+										resolve(this.lastID);
+									}
+								});
+
+								insertMessageIdStatement.finalize();
+							})
+
 							log("Initialised leaderboard message with ID " + message.id);
+					});
+				}
+
+				await interaction.editReply("Done.");
+
+				db.close();
+			}
 		} catch (err) {
 			await interaction.followUp('Something went wrong.');
 			console.log('Error: ', err);
