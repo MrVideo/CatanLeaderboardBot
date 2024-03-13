@@ -2,8 +2,6 @@ const { SlashCommandBuilder } = require('discord.js');
 // Initialise SQLite driver
 const sqlite = require('sqlite3');
 const { dbName } = require('../config.json');
-const { resolve } = require('path');
-const { rejects } = require('assert');
 const { makeLeaderboardEmbed, getMessageId, log } = require('../functions.js');
 
 module.exports = {
