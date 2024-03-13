@@ -56,7 +56,6 @@ module.exports = {
 
 			db.close();
 			log("Added " + username + " to leaderboard");
-			
 		} catch (err) {
 			await interaction.followUp('Something went wrong.');
 			console.log('Error: ', err);
