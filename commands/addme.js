@@ -45,7 +45,7 @@ module.exports = {
 				// Otherwise, the updated leaderboard is used to update said message
 				const channel = await interaction.client.channels.fetch(channelId);
 
-				if (channel !== undefined) {
+				if (channel != undefined) {
 					channel.messages.edit(messageId, { embeds: [await makeLeaderboardEmbed()] })
 						.catch(console.err);
 				}
