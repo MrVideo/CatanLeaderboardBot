@@ -14,11 +14,11 @@ module.exports = {
 		await interaction.deferReply({ ephemeral: true });
 
 		try {
-			const db = new sqlite.Database(dbName);
-
 			// Check whether the initial message was already sent
 			const messageId = await getMessageId();
 			
+			const db = new sqlite.Database(dbName);
+
 			if (messageId != undefined) {
 				await interaction.editReply('A leaderboard message was already sent.');
 				log("Attempt to initialise with a leaderboard message present");
