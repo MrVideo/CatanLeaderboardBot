@@ -43,7 +43,7 @@ module.exports = {
 				await interaction.editReply('No leaderboard message found. Execute `/start` first.');
 			} else {
 				// Otherwise, the updated leaderboard is used to update said message
-				const channel = interaction.guild.channels.cache.get(channelId);
+				const channel = await interaction.client.channels.fetch(channelId);
 
 				if (channel !== undefined) {
 					channel.messages.edit(messageId, { embeds: [await makeLeaderboardEmbed()] })

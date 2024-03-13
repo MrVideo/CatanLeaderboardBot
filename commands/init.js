@@ -54,7 +54,7 @@ module.exports = {
 					});
 				}
 
-				const channel = await interaction.guild.channels.cache.get(channelId);
+				const channel = await interaction.client.channels.fetch(channelId);
 
 				if (channel != null) {
 					channel.send({ embeds: [queryResponseEmbed] })
