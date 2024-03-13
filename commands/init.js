@@ -55,14 +55,15 @@ module.exports = {
 				}
 
 				const channel = await interaction.client.channels.fetch(channelId);
+				const insertMessageIdStatement = db.prepare('INSERT INTO Message VALUES(?)');
 
 				if (channel != null) {
 					channel.send({ embeds: [queryResponseEmbed] })
 						.then(async message => {
-							const insertMessageIdStatement = db.prepare('INSERT INTO Message VALUES(?)');
 							const lastId = await new Promise((resolve, reject) => {
 
 								insertMessageIdStatement.run([message.id], (err) => {
+									insertMessageIdStatement.finalize();
 									if (err) {
 										reject(err);
 									} else {
@@ -70,11 +71,9 @@ module.exports = {
 									}
 								});
 							});
-
-							insertMessageIdStatement.finalize();
-
 							log("Initialised leaderboard message with ID " + message.id);
 					});
+
 				}
 
 				await interaction.editReply("Done.");
