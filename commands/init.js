@@ -1,6 +1,6 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 // Initialise SQLite driver
-const sqlite = require('sqlite3');
+const sqlite = require('sqlite3').verbose();
 const { dbName, channelId } = require('../config.json');
 const { getMessageId, log } = require('../functions.js');
 
