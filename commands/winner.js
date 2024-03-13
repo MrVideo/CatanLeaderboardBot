@@ -7,7 +7,7 @@ const { makeLeaderboardEmbed, getMessageId, log } = require('../functions.js');
 module.exports = {
 	data: new SlashCommandBuilder()
 		.setName('winner')
-		.setDescription('Sets the player that invokes this command as winner'),
+		.setDescription('Adds one point to the player that invokes the command.'),
 
 	async execute(interaction) {
 		// Defer reply
