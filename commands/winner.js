@@ -4,6 +4,7 @@ const sqlite = require('sqlite3');
 const { dbName } = require('../config.json');
 const { resolve } = require('path');
 const { rejects } = require('assert');
+const { makeLeaderboardEmbed, getMessageId, log } = require('../functions.js');
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -31,6 +32,7 @@ module.exports = {
 			// Close database and tell user everything went smoothly
 			db.close();
 			await interaction.editReply("GG!");
+			log("Add one point to " + username);
 		} catch (err) {
 			await interaction.followUp('Something went wrong.');
 			console.error('Error: ', err);

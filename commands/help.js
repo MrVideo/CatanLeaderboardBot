@@ -1,4 +1,5 @@
 const { SlashCommandBuilder } = require('discord.js');
+const { log } = require('../functions.js');
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -36,6 +37,8 @@ module.exports = {
 			]
 		}
 
+		log("User asked for help");
+		
 		// Respond to user
 		await interaction.reply({ embeds: [helpEmbed] });
 	},

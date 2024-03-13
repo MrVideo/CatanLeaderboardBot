@@ -2,6 +2,7 @@ const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 // Initialise SQLite driver
 const sqlite = require('sqlite3');
 const { dbName } = require('../config.json');
+const { getMessageId, log } = require('../functions.js');
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -17,6 +18,7 @@ module.exports = {
 
 			// Get username from user that invokes the command
 			const username = interaction.user.username;
+				log("Attempt to initialise with a leaderboard message present");
 
 			// Prepare query
 			const insertStatement = db.prepare('INSERT OR IGNORE INTO Points (Username) VALUES (?)');
@@ -26,6 +28,7 @@ module.exports = {
 
 			db.close();
 			await interaction.editReply('Done.');
+							log("Initialised leaderboard message with ID " + message.id);
 		} catch (err) {
 			await interaction.followUp('Something went wrong.');
 			console.log('Error: ', err);
