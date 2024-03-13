@@ -1,7 +1,7 @@
 const { SlashCommandBuilder } = require('discord.js');
 // Initialise SQLite driver
 const sqlite = require('sqlite3');
-const { dbName } = require('../config.json');
+const { dbName, channelId } = require('../config.json');
 const { makeLeaderboardEmbed, getMessageId, log } = require('../functions.js');
 
 module.exports = {
@@ -20,16 +20,41 @@ module.exports = {
 			// Find (or create) SQLite database
 			const db = new sqlite.Database(dbName);
 
-			// Prepare the update statement
-			const insertStatement = db.prepare('UPDATE Points SET Wins = Wins + 1 WHERE Username = ?');
+			// Promise that runs the insert query
+			const lastId = await new Promise((resolve, reject) => {
+				const insertStatement = db.prepare('UPDATE Points SET Wins = Wins + 1 WHERE Username = ?');
 
-			// Run the statement with the passed values and finalise
-			insertStatement.run([username]);
-			insertStatement.finalize();
+				insertStatement.run([username], (err) => {
+					if (err) {
+						reject(err);
+					} else {
+						resolve(this.lastID);
+					}
+				});
 
-			// Close database and tell user everything went smoothly
+				insertStatement.finalize();
+			});
+
+			// Gets the message saved by the bot earlier
+			const messageId = await getMessageId();
+
+			if (messageId === undefined) {
+				// If the message was never sent, then an error message is sent to the user
+				await interaction.editReply('No leaderboard message found. Execute `/start` first.');
+			} else {
+				// Otherwise, the updated leaderboard is used to update said message
+				const channel = interaction.guild.channels.cache.get(channelId);
+
+				if (channel !== undefined) {
+					channel.messages.edit(messageId, { embeds: [await makeLeaderboardEmbed()] })
+						.catch(console.err);
+				}
+
+				// Responds to the user with a confirmation message
+				await interaction.editReply('GG!');
+			}
+
 			db.close();
-			await interaction.editReply("GG!");
 			log("Add one point to " + username);
 		} catch (err) {
 			await interaction.followUp('Something went wrong.');
