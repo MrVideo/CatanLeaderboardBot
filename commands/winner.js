@@ -21,8 +21,9 @@ module.exports = {
 			const db = new sqlite.Database(dbName);
 
 			// Promise that runs the insert query
+			const insertStatement = db.prepare('UPDATE Points SET Wins = Wins + 1 WHERE Username = ?');
+
 			const lastId = await new Promise((resolve, reject) => {
-				const insertStatement = db.prepare('UPDATE Points SET Wins = Wins + 1 WHERE Username = ?');
 
 				insertStatement.run([username], (err) => {
 					if (err) {
@@ -31,9 +32,9 @@ module.exports = {
 						resolve(this.lastID);
 					}
 				});
-
-				insertStatement.finalize();
 			});
+
+			insertStatement.finalize();
 
 			// Gets the message saved by the bot earlier
 			const messageId = await getMessageId();

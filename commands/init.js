@@ -54,13 +54,13 @@ module.exports = {
 					});
 				}
 
-				const channel = interaction.guild.channels.cache.get(channelId);
+				const channel = await interaction.guild.channels.cache.get(channelId);
 
 				if (channel != null) {
 					channel.send({ embeds: [queryResponseEmbed] })
 						.then(async message => {
+							const insertMessageIdStatement = db.prepare('INSERT INTO Message VALUES(?)');
 							const lastId = await new Promise((resolve, reject) => {
-								const insertMessageIdStatement = db.prepare('INSERT INTO Message VALUES(?)');
 
 								insertMessageIdStatement.run([message.id], (err) => {
 									if (err) {
@@ -69,9 +69,9 @@ module.exports = {
 										resolve(this.lastID);
 									}
 								});
+							});
 
-								insertMessageIdStatement.finalize();
-							})
+							insertMessageIdStatement.finalize();
 
 							log("Initialised leaderboard message with ID " + message.id);
 					});

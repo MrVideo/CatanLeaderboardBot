@@ -21,9 +21,9 @@ module.exports = {
 			const username = interaction.user.username;
 
 			// Promise that runs the insert query
-			const lastId = await new Promise((resolve, reject) => {
-				const insertStatement = db.prepare('INSERT OR IGNORE INTO Points (Username) VALUES (?)');
+			const insertStatement = db.prepare('INSERT OR IGNORE INTO Points (Username) VALUES (?)');
 
+			const lastId = await new Promise((resolve, reject) => {
 				insertStatement.run([username], (err) => {
 					if (err) {
 						reject(err);
@@ -31,9 +31,9 @@ module.exports = {
 						resolve(this.lastID);
 					}
 				});
-
-				insertStatement.finalize();
 			});
+
+			insertStatement.finalize();
 
 			// Gets the message saved by the bot earlier
 			const messageId = await getMessageId();
