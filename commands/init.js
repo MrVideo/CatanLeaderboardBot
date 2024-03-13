@@ -54,8 +54,9 @@ module.exports = {
 					});
 				}
 
-				const channel = interaction.client.channels.cache.get(channelId);
-				if (channel != undefined) {
+				const channel = interaction.guild.channels.cache.get(channelId);
+
+				if (channel != null) {
 					channel.send({ embeds: [queryResponseEmbed] })
 						.then(async message => {
 							const lastId = await new Promise((resolve, reject) => {
@@ -74,12 +75,9 @@ module.exports = {
 
 							log("Initialised leaderboard message with ID " + message.id);
 					});
-
-					await interaction.editReply("Done.");
-				} else {
-					await interaction.editReply("Something went wrong.");
-					log("Unable to retrieve channel from guild");
 				}
+
+				await interaction.editReply("Done.");
 
 				db.close();
 			}
