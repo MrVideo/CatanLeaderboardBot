@@ -19,20 +19,20 @@ module.exports = {
 					value: '`/help`'
 				},
 				{
-					name: 'Show leaderboard',
-					value: '`/leaderboard`'
+					name: 'Bot info',
+					value: '`/about`'
+				},
+				{
+					name: 'Add a player with score zero',
+					value: '`/addme`'
 				},
 				{
 					name: 'Add a point to the player that invokes the command',
 					value: '`/winner`'
 				},
 				{
-					name: 'Add a new player to the leaderboard with score zero',
+					name: 'Creates the leaderboard message in a predefined channel',
 					value: '`/init`'
-				},
-				{
-					name: 'Bot info',
-					value: '`/about`'
 				},
 			]
 		}
