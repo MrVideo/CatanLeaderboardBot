@@ -40,6 +40,6 @@ module.exports = {
 		log("User asked for help");
 		
 		// Respond to user
-		await interaction.reply({ embeds: [helpEmbed] });
+		await interaction.reply({ ephemeral: true, embeds: [helpEmbed] });
 	},
 };

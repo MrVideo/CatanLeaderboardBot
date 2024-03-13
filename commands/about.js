@@ -21,6 +21,6 @@ module.exports = {
 		log("User requested about page");
 
 		// Respond to user
-		await interaction.reply({ embeds: [aboutEmbed] });
+		await interaction.reply({ ephemeral: true, embeds: [aboutEmbed] });
 	},
 };
