@@ -14,8 +14,9 @@ async function makeLeaderboardEmbed() {
 				resolve(rows);
 			}
 		});
-		query.finalize();
 	});
+	
+	query.finalize();
 
 	let embed = new EmbedBuilder();
 	embed.setTitle('Leaderboard');
@@ -51,10 +52,9 @@ async function getMessageId() {
 				resolve(rows);
 			}
 		});
-
-		query.finalize();
 	});
 
+	query.finalize();
 	db.close();
 
 	if (rows[0] === undefined) {
