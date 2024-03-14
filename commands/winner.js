@@ -17,16 +17,6 @@ module.exports = {
 		const db = new sqlite.Database(dbName);
 
 		try {
-			await new Promise((resolve, reject) => {
-				db.run('UPDATE Points SET Wins = Wins + 1 WHERE Username = ?', [username], (err) => {
-					if (err) {
-						reject(err);
-					} else {
-						resolve();
-					}
-				});
-			});
-
 			// Gets the message saved by the bot earlier
 			const messageId = await getMessageId();
 
@@ -34,6 +24,16 @@ module.exports = {
 				// If the message was never sent, then an error message is sent to the user
 				await interaction.editReply('No leaderboard message found. Execute `/init` first.');
 			} else {
+				await new Promise((resolve, reject) => {
+					db.run('UPDATE Points SET Wins = Wins + 1 WHERE Username = ?', [username], (err) => {
+						if (err) {
+							reject(err);
+						} else {
+							resolve();
+						}
+					});
+				});
+
 				// Otherwise, the updated leaderboard is used to update said message
 				const channel = await interaction.client.channels.fetch(await getChannelId());
 

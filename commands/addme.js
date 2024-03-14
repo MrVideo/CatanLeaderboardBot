@@ -16,22 +16,22 @@ module.exports = {
 		try {
 			const username = interaction.user.username;
 
-			await new Promise((resolve, reject) => {
-				db.run('INSERT OR IGNORE INTO Points (Username) VALUES (?)', [username], (err) => {
-					if (err) {
-						reject(err);
-					} else {
-						resolve(this.lastID);
-					}
-				});
-			});
-
 			const messageId = await getMessageId();
 
 			if (!messageId) {
 				// If the message was never sent, then an error message is sent to the user
 				await interaction.editReply('No leaderboard message found. Execute `/init` first.');
 			} else {
+				await new Promise((resolve, reject) => {
+					db.run('INSERT OR IGNORE INTO Points (Username) VALUES (?)', [username], (err) => {
+						if (err) {
+							reject(err);
+						} else {
+							resolve(this.lastID);
+						}
+					});
+				});
+
 				// Otherwise, the updated leaderboard is used to update said message
 				const channel = await interaction.client.channels.fetch(await getChannelId());
 
