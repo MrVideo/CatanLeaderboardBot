@@ -23,17 +23,21 @@ module.exports = {
 					value: '`/about`'
 				},
 				{
+					name: 'Creates the leaderboard message in a predefined channel',
+					value: '`/init`'
+				},
+				{
+					name: 'Removes the leaderboard message (the data remains intact)',
+					value: '`/reset`'
+				},
+				{
 					name: 'Add a player with score zero',
 					value: '`/addme`'
 				},
 				{
 					name: 'Add a point to the player that invokes the command',
 					value: '`/winner`'
-				},
-				{
-					name: 'Creates the leaderboard message in a predefined channel',
-					value: '`/init`'
-				},
+				}
 			]
 		}
 
