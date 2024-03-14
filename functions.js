@@ -4,63 +4,70 @@ const { dbName } = require('./config.json');
 
 async function makeLeaderboardEmbed() {
 	const db = new sqlite.Database(dbName);
-	const query = db.prepare('SELECT * FROM Points ORDER BY Wins DESC');
 
-	const rows = await new Promise((resolve, reject) => {
-		query.all((err, rows) => {
-			if (err) {
-				reject(err);
-			} else {
-				resolve(rows);
-			}
-		});
-	});
-	
-	query.finalize();
-
-	let embed = new EmbedBuilder();
-	embed.setTitle('Leaderboard');
-
-	if (rows.length !== 0) {
-		rows.forEach((row) => {
-			embed.addFields({
-				name: row.Username,
-				value: `${row.Wins}`
+	try {
+		const rows = await new Promise((resolve, reject) => {
+			db.all('SELECT * FROM Points ORDER BY Wins DESC', (err, rows) => {
+				if (err) {
+					reject(err);
+				} else {
+					resolve(rows);
+				}
 			});
 		});
-	} else {
-		embed.addFields({
-			name: 'No players yet',
-			value: 'Play more Catan!'
-		});
-	}
 
-	db.close();
-	
-	return embed;
+		let embed = new EmbedBuilder();
+		embed.setTitle('Leaderboard');
+
+		if (rows.length !== 0) {
+			rows.forEach((row) => {
+				embed.addFields({
+					name: row.Username,
+					value: `${row.Wins}`
+				});
+			});
+		} else {
+			embed.addFields({
+				name: 'No players yet',
+				value: 'Play more Catan!'
+			});
+		}
+
+		return embed;
+	} catch (error) {
+		console.error('Error fetching leaderboard: ', error)
+	} finally {
+		db.close();
+	}
 }
 
 async function getMessageId() {
 	const db = new sqlite.Database(dbName);
-	const query = db.prepare('SELECT MessageID FROM Message LIMIT 1');
 
-	const rows = await new Promise((resolve, reject) => {
-		query.all((err, rows) => {
-			if (err) {
-				reject(err);
-			} else {
-				resolve(rows);
-			}
+	try {
+		const messageRow = await new Promise((resolve, reject) => {
+			db.get('SELECT MessageID FROM Message LIMIT 1', (err, row) => {
+				if (err) {
+					reject(err);
+				} else {
+					resolve(row);
+				}
+			});
 		});
-	});
 
-	query.finalize();
-	db.close();
+		if (messageRow) {
+			return messageRow.MessageID;
+		} else {
+			return null;
+		}
+	} catch(error) {
+		console.error('Error fetching message ID: ', error);
+	} finally {
+		db.close();
+	}
+}
 
-	if (rows[0] === undefined) {
-		return undefined;
-	} else {
-		return rows[0].MessageID;
+
 	}
 }
 
