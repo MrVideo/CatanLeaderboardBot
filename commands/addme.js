@@ -21,6 +21,7 @@ module.exports = {
 			if (!messageId) {
 				// If the message was never sent, then an error message is sent to the user
 				await interaction.editReply('No leaderboard message found. Execute `/init` first.');
+				log("Attempt to add user " + username + " to leaderboard with no leaderboard message present");
 			} else {
 				await new Promise((resolve, reject) => {
 					db.run('INSERT OR IGNORE INTO Points (Username) VALUES (?)', [username], (err) => {

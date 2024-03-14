@@ -21,6 +21,7 @@ module.exports = {
 			if (!messageId && !savedChannelId) {
 				// If the message was never sent, then an error message is sent to the user
 				await interaction.editReply('You cannot reset the bot before initialising it.');
+				log("Attempt to reset leaderboard with no prior initialisation");
 			} else {
 				const channel = await interaction.client.channels.fetch(savedChannelId);
 
@@ -28,7 +29,6 @@ module.exports = {
 					channel.messages.delete(messageId);
 
 					await interaction.editReply('Done.');
-					log("Removed leaderboard message");
 				} else throw new Error('Unable to fetch channel');
 
 				await new Promise((resolve, reject) => {
@@ -51,6 +51,7 @@ module.exports = {
 					});
 				});
 
+				log("Removed leaderboard message");
 			}
 		} catch (err) {
 			await interaction.followUp('Something went wrong.');
