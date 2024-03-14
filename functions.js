@@ -67,7 +67,29 @@ async function getMessageId() {
 	}
 }
 
+async function getChannelId() {
+	const db = new sqlite.Database(dbName);
 
+	try {
+		const channelRow = await new Promise((resolve, reject) => {
+			db.get('SELECT ChannelID FROM Channel LIMIT 1', (err, row) => {
+				if (err) {
+					reject(err);
+				} else {
+					resolve(row);
+				}
+			});
+		});
+
+		if (channelRow) {
+			return channelRow.ChannelID;
+		} else {
+			return null;
+		}
+	} catch(error) {
+		console.error('Error fetching channel ID: ', error);
+	} finally {
+		db.close();
 	}
 }
 
@@ -87,5 +109,6 @@ function log(string) {
 module.exports = {
 	makeLeaderboardEmbed,
 	getMessageId,
+	getChannelId,
 	log
 }

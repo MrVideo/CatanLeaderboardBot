@@ -1,8 +1,7 @@
 const { SlashCommandBuilder } = require('discord.js');
-// Initialise SQLite driver
 const sqlite = require('sqlite3');
-const { dbName, channelId } = require('../config.json');
-const { makeLeaderboardEmbed, getMessageId, log } = require('../functions.js');
+const { dbName } = require('../config.json');
+const { makeLeaderboardEmbed, getMessageId, getChannelId, log } = require('../functions.js');
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -10,21 +9,15 @@ module.exports = {
 		.setDescription('Adds a player to the leaderboard with zero points.'),
 
 	async execute(interaction) {
-		// Defer reply
 		await interaction.deferReply({ ephemeral: true });
 
-		try {
-			// Connect to database
-			const db = new sqlite.Database(dbName);
+		const db = new sqlite.Database(dbName);
 
-			// Get username from user that invokes the command
+		try {
 			const username = interaction.user.username;
 
-			// Promise that runs the insert query
-			const insertStatement = db.prepare('INSERT OR IGNORE INTO Points (Username) VALUES (?)');
-
-			const lastId = await new Promise((resolve, reject) => {
-				insertStatement.run([username], (err) => {
+			await new Promise((resolve, reject) => {
+				db.run('INSERT OR IGNORE INTO Points (Username) VALUES (?)', [username], (err) => {
 					if (err) {
 						reject(err);
 					} else {
@@ -33,32 +26,27 @@ module.exports = {
 				});
 			});
 
-			insertStatement.finalize();
-
-			// Gets the message saved by the bot earlier
 			const messageId = await getMessageId();
 
-			if (messageId === undefined) {
+			if (!messageId) {
 				// If the message was never sent, then an error message is sent to the user
-				await interaction.editReply('No leaderboard message found. Execute `/start` first.');
+				await interaction.editReply('No leaderboard message found. Execute `/init` first.');
 			} else {
 				// Otherwise, the updated leaderboard is used to update said message
-				const channel = await interaction.client.channels.fetch(channelId);
+				const channel = await interaction.client.channels.fetch(await getChannelId());
 
-				if (channel != undefined) {
-					channel.messages.edit(messageId, { embeds: [await makeLeaderboardEmbed()] })
-						.catch(console.err);
-				}
+				if (channel) {
+					channel.messages.edit(messageId, { embeds: [await makeLeaderboardEmbed()] });
 
-				// Responds to the user with a confirmation message
-				await interaction.editReply('Done.');
+					await interaction.editReply('Done.');
+					log("Added " + username + " to leaderboard");
+				} else throw new Error('Unable to fetch channel');
 			}
-
-			db.close();
-			log("Added " + username + " to leaderboard");
 		} catch (err) {
 			await interaction.followUp('Something went wrong.');
 			console.log('Error: ', err);
+		} finally {
+			db.close();
 		}
 	},
 };
